@@ -2,7 +2,7 @@
 
 namespace Products.Domain.Interfaces
 {
-  internal interface IProductRepository : IBaseRepo<Product>
+  public interface IProductRepository : IBaseRepo<Product>
   {
       public Task<bool> DecrementStock(int productId, int quantity);
 

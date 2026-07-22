@@ -1,7 +1,7 @@
 ﻿namespace Products.Domain
 
 {
-  internal interface IBaseRepo<T> where T : class
+  public interface IBaseRepo<T> where T : class
   {
     public Task<IEnumerable<T>> GetAllAsync();
     public Task<int> CreateAsync(T entity);
