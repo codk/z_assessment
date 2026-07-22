@@ -1,9 +1,5 @@
-﻿using Products.Infrastructure.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Products.Domain
 
-namespace Products.Infrastructure
 {
   internal interface IBaseRepo<T> where T : class
   {

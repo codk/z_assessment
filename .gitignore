@@ -11,3 +11,5 @@
 /z_assessment/Products.Domain/obj
 /z_assessment/Products.Infrastructure/bin/Debug/net10.0
 /z_assessment/.vs
+/z_assessment/Tests/Products.Tests.Unit/bin/Debug/net10.0
+/z_assessment/Tests/Products.Tests.Unit/obj

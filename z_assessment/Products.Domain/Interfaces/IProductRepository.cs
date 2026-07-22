@@ -1,6 +1,6 @@
-﻿using Products.Infrastructure.Entities;
+﻿using Products.Domain.Entities;
 
-namespace Products.Infrastructure.Interfaces
+namespace Products.Domain.Interfaces
 {
   internal interface IProductRepository : IBaseRepo<Product>
   {
