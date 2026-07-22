@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/z_assessment/Products.Infrastructure/obj
+/z_assessment/Procducts.Api/bin/Debug/net10.0
+/z_assessment/Procducts.Api/obj
+/z_assessment/Products/bin/Debug/net10.0
+/z_assessment/Products/obj
+/z_assessment/Products.Domain/bin/Debug/net10.0
+/z_assessment/Products.Domain/obj
+/z_assessment/Products.Infrastructure/bin/Debug/net10.0
