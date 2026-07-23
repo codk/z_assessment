@@ -28,6 +28,8 @@ builder.Services.AddOpenApi(x =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IStockMovementRepository, StockMovementRepository>();
+builder.Services.AddScoped<IStockMovementService, StockMovementService>();
 
 
 

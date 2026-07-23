@@ -20,7 +20,7 @@ namespace Products.Infrastructure.Repositories
       return await _context.Set<T>().ToListAsync();
     }
 
-    public async Task<int> CreateAsync(T entity)
+    public virtual async Task<int> CreateAsync(T entity)
     {
       await _context.AddAsync(entity);
       return await _context.SaveChangesAsync();

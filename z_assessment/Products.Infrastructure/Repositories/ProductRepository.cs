@@ -16,33 +16,6 @@ namespace Products.Infrastructure.Repositories
       _context= context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<bool> DecrementStock(int productId, int quantity)
-    {
-      if (quantity <= 0) return false;
-      var product = await _context.Products.FindAsync(productId);
-      if (product == null) return false;
-      if (product.Stock < quantity) return false;
-
-      product.Stock -= quantity;
-      product.UpdatedOn = DateTime.UtcNow;
-      _context.Products.Update(product);
-      await _context.SaveChangesAsync();
-      return true;
-    }
-
-    public async Task<bool> IncrementStock(int productId, int quantity)
-    {
-      if (quantity <= 0) return false;
-      var product = await _context.Products.FindAsync(productId);
-      if (product == null) return false;
-
-      product.Stock += quantity;
-      product.UpdatedOn = DateTime.UtcNow;
-      _context.Products.Update(product);
-      await _context.SaveChangesAsync();
-      return true;
-    }
-
     public async Task<IEnumerable<Product>> ProductSearch(string name)
     {
       if (string.IsNullOrWhiteSpace(name))

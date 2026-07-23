@@ -26,7 +26,7 @@ namespace Products.Services
       {
         Name = dto.Name,
         Description = dto.Description,
-        Stock = dto.Stock
+      //  Stock = dto.Stock
       };
 
       await _productRepository.CreateAsync(product);
@@ -76,25 +76,34 @@ namespace Products.Services
 
     #region stock operations
 
-    public async Task<bool> StockIncrementAsync(int productId, int incrementBy)
+    //public async Task<bool> StockIncrementAsync(int productId, int incrementBy)
+    //{
+    //  var product = await _productRepository.GetByIdAsync(productId);
+    //  if (product == null) return false;
+
+    //  product.Stock += incrementBy;
+    //  await _productRepository.UpdateAsync(product);
+    //  return true;
+    //}
+
+    //public async Task<bool> StockDecrementAsync(int productId, int decreaseBy)
+    //{
+    //  var product = await _productRepository.GetByIdAsync(productId);
+    //  if (product == null) return false;
+
+    //  //if(product.Stock < decreaseBy)
+    //  //    throw new InvalidOperationException($"Insufficient stock. Available: {product.Stock}, Requested: {decreaseBy}.");
+
+    //  product.Stock -= decreaseBy;
+    //  await _productRepository.UpdateAsync(product);
+    //  return true;
+    //}
+    public async Task<bool> SetStock(int productId, int stock)
     {
       var product = await _productRepository.GetByIdAsync(productId);
-      if (product == null) return false;
-
-      product.Stock += incrementBy;
-      await _productRepository.UpdateAsync(product);
-      return true;
-    }
-
-    public async Task<bool> StockDecrementAsync(int productId, int decreaseBy)
-    {
-      var product = await _productRepository.GetByIdAsync(productId);
-      if (product == null) return false;
-
-      //if(product.Stock < decreaseBy)
-      //    throw new InvalidOperationException($"Insufficient stock. Available: {product.Stock}, Requested: {decreaseBy}.");
-
-      product.Stock -= decreaseBy;
+        if (product == null) return false;
+      
+      product.Stock = stock;
       await _productRepository.UpdateAsync(product);
       return true;
     }
@@ -109,6 +118,7 @@ namespace Products.Services
       product.Description,
       product.Stock
     );
+
 
     #endregion mapping operations
   }

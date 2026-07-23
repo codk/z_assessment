@@ -10,11 +10,14 @@ namespace Products.Tests.Unit
   public class ProductRepoTests
   {
     private Mock<IProductRepository> _mockProductRepo = new();
+    private Mock<IStockMovementRepository> _mockStockMovementRepo = new();
     protected readonly ProductService _mockProductService;
+    protected readonly StockMovementService _mockStockMovementService;
 
     public ProductRepoTests()
     {
       _mockProductService = new ProductService(_mockProductRepo.Object);
+      _mockStockMovementService = new StockMovementService(_mockStockMovementRepo.Object, _mockProductService);
     }
 
     [Fact]
@@ -36,7 +39,7 @@ namespace Products.Tests.Unit
     [Fact]
     public async Task GetByIdAsync_ReturnsProduct_WhenExists()
     {
-      var product = CreateProduct(100001, "Alpha", 5);
+      var product = CreateProduct(100001, "Alpha");
       _mockProductRepo.Setup(r => r.GetByIdAsync(100001)).ReturnsAsync((Product?)product);
 
       var result = await _mockProductService.GetByIdAsync(100001);
@@ -51,8 +54,8 @@ namespace Products.Tests.Unit
     {
       var products = new List<Product>
                     {
-                        CreateProduct(100001, "Alpha", 5),
-                        CreateProduct(100002, "Beta", 15)
+                        CreateProduct(100001, "Alpha"),
+                        CreateProduct(100002, "Beta")
                     };
       _mockProductRepo.Setup(r => r.ProductSearch("Alpha")).ReturnsAsync(products.Where(p => p.Name == "Alpha"));
       var result = await _mockProductService.GetByNameAsync("Alpha");
@@ -66,9 +69,11 @@ namespace Products.Tests.Unit
     {
       var products = new List<Product>
                     {
-                        CreateProduct(100001, "A", 5),
-                        CreateProduct(100002, "B", 15)
+                        new Product(){ Id = 100001, Name = "A", Stock=5},
+                        new Product(){ Id = 100002, Name = "A", Stock=20}
                     };
+
+
       _mockProductRepo.Setup(r => r.ProductSearchByStock(1, 20)).ReturnsAsync(products);
 
       var result = await _mockProductService.GetByStockAsync(1, 20);
@@ -80,55 +85,14 @@ namespace Products.Tests.Unit
     [Fact]
     public async Task Create_ReturnsCreatedProduct_AndChecksId()
     {
-      var dto = new CreateProductDto("Product 1", "Description for product 1", 99);
+      var dto = new CreateProductDto("Product 1", "Description for product 1");
       _mockProductRepo.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync((Product p) => { p.Id = 1000000; return p.Id; });
 
       var result = await _mockProductService.CreateAsync(dto);
       result.Id.Should().Be(1000000);
     }
 
-    [Fact]
-    public async Task StockIncrementAsync_ReturnsFalseWhenProductNotFound()
-    {
-      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)null);
 
-      var result = await _mockProductService.StockIncrementAsync(999, 5);
-
-      result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task StockIncrementAsync_ReturnsTrueWhenProductFound()
-    {
-      var product = CreateProduct(999, "Test Product", 10);
-      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)product);
-
-      var result = await _mockProductService.StockIncrementAsync(999, 5);
-
-      result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task StockDecremAsync_ReturnsFalseWhenProductNotFound()
-    {
-      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)null);
-
-      var result = await _mockProductService.StockDecrementAsync(999, 5);
-        
-      result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task StockDecrementAsync_ReturnsTrueWhenProductFound()
-    {
-      var product = CreateProduct(999, "Test Product", 10);
-      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)product);
-
-      var result = await _mockProductService.StockDecrementAsync(999, 5);
-
-      result.Should().BeTrue();
-    }
-
-    private static Product CreateProduct(int id, string name, int stock, string description = default) => new Product { Id = id, Name = name, Stock = stock, Description = description };
+    private static Product CreateProduct(int id, string name, string description = default) => new Product { Id = id, Name = name, Description = description };
   }
 }

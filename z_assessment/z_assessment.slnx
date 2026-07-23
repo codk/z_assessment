@@ -3,6 +3,7 @@
     <File Path="Readme.md" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="Products.Tests.Integration/Products.Tests.Integration.csproj" Id="5369bf2b-a733-4597-bca9-c1267fa37bf1" />
     <Project Path="Tests/Products.Tests.Unit/Products.Tests.Unit.csproj" Id="f7825f69-07e8-42ee-a291-88e3b1640319" />
   </Folder>
   <Project Path="Procducts.Api/Products.Api.csproj" Id="8e344c8c-9a20-4c2c-b6e8-f115edcaa06a" />

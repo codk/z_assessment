@@ -7,13 +7,13 @@ namespace Products.Api.Controllers
   [Route("api/[controller]")]
   [ApiController]
   [Produces("application/json")]
-  public class ProductsController(IProductService service) : ControllerBase
+  public class ProductsController(IProductService productService, IStockMovementService stockMovementService) : ControllerBase
   {
     [HttpGet]
     [ProducesResponseType<IEnumerable<ProductResponseDto>>(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-      var products = await service.GetAllAsync();
+      var products = await productService.GetAllAsync();
       return Ok(products);
     }
 
@@ -22,7 +22,7 @@ namespace Products.Api.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-      var product = await service.GetByIdAsync(id);
+      var product = await productService.GetByIdAsync(id);
       return product is null ? NotFound() : Ok(product);
     }
 
@@ -31,7 +31,7 @@ namespace Products.Api.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Search([FromQuery] string name)
     {
-      var products = await service.GetByNameAsync(name);
+      var products = await productService.GetByNameAsync(name);
       return Ok(products);
     }
 
@@ -40,7 +40,7 @@ namespace Products.Api.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStockLevel([FromQuery] int min, [FromQuery] int max)
     {
-      var products = await service.GetByStockAsync(min, max);
+      var products = await productService.GetByStockAsync(min, max);
       return Ok(products);
     }
 
@@ -53,7 +53,7 @@ namespace Products.Api.Controllers
       if (!ModelState.IsValid)
         return BadRequest();
 
-      var created = await service.CreateAsync(dto);
+      var created = await productService.CreateAsync(dto);
 
       return CreatedAtAction(nameof(Create), new { id = created.Id }, created);
     }
@@ -69,7 +69,7 @@ namespace Products.Api.Controllers
       if (!ModelState.IsValid)
         return BadRequest();
 
-      var updated = await service.UpdateAsync(id, dto);
+      var updated = await productService.UpdateAsync(id, dto);
       return updated is null ? NotFound() : Ok(updated);
     }
 
@@ -83,9 +83,11 @@ namespace Products.Api.Controllers
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
 
-      var added = await service.StockIncrementAsync(id, quantity);
+      
 
-      return added ? Ok() : BadRequest(new { error = "Failed to add stock." });
+      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity));
+
+      return (added > 0) ? Ok() : BadRequest(new { error = "Failed to increment stock." });
     }
 
     [HttpPost("{id}/decrement-stock/{quantity}")]
@@ -97,10 +99,12 @@ namespace Products.Api.Controllers
     {
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
+      
+      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity*-1));
 
-      var added = await service.StockDecrementAsync(id, quantity);
+      return (added > 0) ? Ok() : BadRequest(new { error = "Failed to decrement stock." });
 
-      return added ? Ok() : BadRequest(new { error = "Failed to decrement stock." });
+      
     }
 
 
@@ -109,7 +113,7 @@ namespace Products.Api.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-      var deleted = await service.DeleteAsync(id);
+      var deleted = await productService.DeleteAsync(id);
       return deleted ? Ok() : NotFound();
     }
   }

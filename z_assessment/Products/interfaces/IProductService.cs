@@ -19,8 +19,10 @@ namespace Products.interfaces
     Task<IEnumerable<ProductResponseDto>> GetByStockAsync(int stockMin, int stockMax);
 
 
-    Task<bool> StockIncrementAsync(int productId, int incrementBy);
-    Task<bool> StockDecrementAsync(int productId, int decreaseBy);
+    //Task<bool> StockIncrementAsync(int productId, int incrementBy);
+    //Task<bool> StockDecrementAsync(int productId, int decreaseBy);
+
+    Task<bool> SetStock(int productId, int stock);
 
     Task<bool> DeleteAsync(int id);
 
