@@ -60,7 +60,7 @@ namespace Products.Services
     }
 
     #region stock operations
-    public async Task<bool> StockIncrement(int productId, int incrementBy)
+    public async Task<bool> StockIncrementAsync(int productId, int incrementBy)
     {
         var product = await _productRepository.GetByIdAsync(productId);
         if (product == null) return false;
@@ -71,7 +71,7 @@ namespace Products.Services
     }
 
 
-    public async Task<bool> StockDecrement(int productId, int incrementBy)
+    public async Task<bool> StockDecrementAsync(int productId, int incrementBy)
     {
         var product = await _productRepository.GetByIdAsync(productId);
         if (product == null) return false;

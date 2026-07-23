@@ -92,6 +92,51 @@ namespace Products.Tests.Unit
       result.Id.Should().Be(1000000);
     }
 
+
+    [Fact]
+    public async Task StockIncrementAsync_ReturnsFalseWhenProductNotFound()
+    {
+      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)null);
+
+      var result = await _mockProductService.StockIncrementAsync(999, 5);
+
+      result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task StockIncrementAsync_ReturnsTrueWhenProductFound()
+    {
+      var product = CreateProduct(999, "Test Product", 10);
+      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync(product);
+
+      var result = await _mockProductService.StockIncrementAsync(999, 5);
+
+      result.Should().BeTrue();
+    }
+
+
+
+    [Fact]
+    public async Task   Async_ReturnsFalseWhenProductNotFound()
+    {
+      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Product?)null);
+
+      var result = await _mockProductService.StockDecrementAsync(999, 5);
+
+      result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task StockDecrementAsync_ReturnsTrueWhenProductFound()
+    {
+      var product = CreateProduct(999, "Test Product", 10);
+      _mockProductRepo.Setup(r => r.GetByIdAsync(999)).ReturnsAsync(product);
+
+      var result = await _mockProductService.StockDecrementAsync(999, 5);
+
+      result.Should().BeTrue();
+    }
+
     static Product CreateProduct(int id, string name, int stock, string description=default) => new Product{Id=id, Name=name, Stock=stock, Description=description};
 
 
