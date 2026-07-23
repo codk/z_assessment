@@ -20,6 +20,35 @@ namespace Products.Api.Controllers
     }
 
 
+    [HttpGet("id:{id:int}")]
+    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id)
+    {
+      var product = await service.GetByIdAsync(id);
+      return product is null ? NotFound() : Ok(product);
+    
+    }
+
+    [HttpGet("name:{name}")]
+    [ProducesResponseType<IEnumerable<ProductResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByName(string name)
+    {
+      var products = await service.GetByNameAsync(name);
+      return Ok(products);
+    }
+
+    [HttpGet("stock-level")]
+    [ProducesResponseType<IEnumerable<ProductResponseDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByStockLevel([FromQuery] int min, [FromQuery] int max)
+    {
+      var products = await service.GetByStockAsync(min, max);
+      return Ok(products);
+    }
+
+
 
 
     [HttpPost]
@@ -37,6 +66,9 @@ namespace Products.Api.Controllers
       
       return CreatedAtAction(nameof(Create), new { id = created.Id }, created);
     }
+
+
+
   }
 }
 
