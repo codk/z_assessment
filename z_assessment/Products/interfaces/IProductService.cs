@@ -3,7 +3,7 @@
 
 namespace Products.interfaces
 {
-  internal interface IProductService
+  public interface IProductService
   {
 
     Task<ProductResponseDto> CreateAsync(CreateProductDto dto);

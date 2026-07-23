@@ -1,8 +1,11 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Readme.md" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/Products.Tests.Unit/Products.Tests.Unit.csproj" Id="f7825f69-07e8-42ee-a291-88e3b1640319" />
   </Folder>
-  <Project Path="Procducts.Api/Procducts.Api.csproj" Id="8e344c8c-9a20-4c2c-b6e8-f115edcaa06a" />
+  <Project Path="Procducts.Api/Products.Api.csproj" Id="8e344c8c-9a20-4c2c-b6e8-f115edcaa06a" />
   <Project Path="Products.Domain/Products.Domain.csproj" Id="6abfe090-850f-4dd9-b64e-0d4a34d5c35a" />
   <Project Path="Products.Infrastructure/Products.Infrastructure.csproj" Id="d367c351-8c1f-4266-b614-14e8494f4b0d" />
   <Project Path="Products/Products.csproj" Id="39878334-e4df-4eb5-bd6d-47bb9f0b8e93" />

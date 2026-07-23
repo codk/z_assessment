@@ -20,7 +20,8 @@ namespace Products.Infrastructure
         x.Property(p => p.Stock).IsRequired();
 
         x.Property(p => p.Id)
-          .HasDefaultValueSql("NEXT VALUE FOR \"ProductIdSeq\"");
+          .HasDefaultValueSql("nextval('\"ProductIdSeq\"')")
+          .ValueGeneratedOnAdd();
       });
     }
 
