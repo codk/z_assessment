@@ -59,36 +59,50 @@ namespace Products.Services
       return products?.Select(ToDto) ?? Enumerable.Empty<ProductResponseDto>();
     }
 
+    public async Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto)
+    {
+      var product = await _productRepository.GetByIdAsync(id);
+      product.Description = dto.Description;
+      product.Name = dto.Name;
+
+      await _productRepository.UpdateAsync(product);
+      return ToDto(product);
+    }
+
+
+    public async Task<bool> DeleteAsync(int id) => await _productRepository.DeleteAsync(id);
+    
+
+
     #region stock operations
+
     public async Task<bool> StockIncrementAsync(int productId, int incrementBy)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
-        if (product == null) return false;
+      var product = await _productRepository.GetByIdAsync(productId);
+      if (product == null) return false;
 
-        product.Stock += incrementBy;
-        await _productRepository.UpdateAsync(product);
-        return true;
+      product.Stock += incrementBy;
+      await _productRepository.UpdateAsync(product);
+      return true;
     }
 
-
-    public async Task<bool> StockDecrementAsync(int productId, int incrementBy)
+    public async Task<bool> StockDecrementAsync(int productId, int decreaseBy)
     {
-        var product = await _productRepository.GetByIdAsync(productId);
-        if (product == null) return false;
-        
-        product.Stock -= incrementBy;
-        await _productRepository.UpdateAsync(product);
-        return true;
+      var product = await _productRepository.GetByIdAsync(productId);
+      if (product == null) return false;
+
+      //if(product.Stock < decreaseBy)
+      //    throw new InvalidOperationException($"Insufficient stock. Available: {product.Stock}, Requested: {decreaseBy}.");
+
+      product.Stock -= decreaseBy;
+      await _productRepository.UpdateAsync(product);
+      return true;
     }
 
-
-
-
-    #endregion
-
-
+    #endregion stock operations
 
     #region mapping operations
+
     private static ProductResponseDto ToDto(Product product) => new ProductResponseDto(
       product.Id,
       product.Name,
@@ -96,7 +110,6 @@ namespace Products.Services
       product.Stock
     );
 
-
-    #endregion
+    #endregion mapping operations
   }
 }

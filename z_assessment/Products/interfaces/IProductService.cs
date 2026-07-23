@@ -8,6 +8,8 @@ namespace Products.interfaces
 
     Task<ProductResponseDto> CreateAsync(CreateProductDto dto);
 
+    Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto);
+
     Task<IEnumerable<ProductResponseDto>> GetAllAsync();
 
     Task<ProductResponseDto?> GetByIdAsync(int id);
@@ -18,8 +20,9 @@ namespace Products.interfaces
 
 
     Task<bool> StockIncrementAsync(int productId, int incrementBy);
-    Task<bool> StockDecrementAsync(int productId, int incrementBy);
+    Task<bool> StockDecrementAsync(int productId, int decreaseBy);
 
+    Task<bool> DeleteAsync(int id);
 
 
   }
