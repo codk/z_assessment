@@ -18,5 +18,25 @@ namespace Products.Api.Controllers
       var products = await service.GetAllAsync();
       return Ok(products);
     }
+
+
+
+
+    [HttpPost]
+    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create(
+        [FromBody] CreateProductDto dto,
+        CancellationToken ct)
+    {
+
+      if (!ModelState.IsValid)
+        return BadRequest();
+
+      var created = await service.CreateAsync(dto);
+      
+      return CreatedAtAction(nameof(Create), new { id = created.Id }, created);
+    }
   }
 }
+

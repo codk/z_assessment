@@ -9,5 +9,6 @@ namespace Products.interfaces
     Task<ProductResponseDto> CreateAsync(CreateProductDto dto);
 
     Task<IEnumerable<ProductResponseDto>> GetAllAsync();
+
   }
 }

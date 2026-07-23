@@ -4,6 +4,7 @@ using Products.Infrastructure;
 using Products.Infrastructure.Repositories;
 using Products.interfaces;
 using Products.Services;
+
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,9 @@ builder.Services.AddOpenApi(x =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+
+
+
 
 var app = builder.Build();
 

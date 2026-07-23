@@ -1,6 +1,5 @@
 ﻿using Moq;
 using FluentAssertions;
-
 using Products.Domain.Entities;
 using Products.Domain.Interfaces;
 using Products.Services;
