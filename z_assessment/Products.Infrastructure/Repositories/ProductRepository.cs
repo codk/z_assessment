@@ -13,13 +13,20 @@ namespace Products.Infrastructure.Repositories
       _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
+    public override async Task<Product?> GetByIdAsync(int id)
+    {
+      return await _context.Products
+        .Include(p => p.StockMovements.Where(m => m.IsActive))
+        .FirstOrDefaultAsync(x=>x.Id==id);
+    }
+        
+
     public override async Task<IEnumerable<Product>> GetAllAsync()
     {
       return await _context.Products
         .Include(p => p.StockMovements.Where(m => m.IsActive))
         .ToListAsync();
     }
-
 
 
     public async Task<IEnumerable<Product>> ProductSearch(string name)
@@ -39,8 +46,12 @@ namespace Products.Infrastructure.Repositories
     {
       if (min > max) (min, max) = (max, min);
       return await _context.Products
-         .Include(p => p.StockMovements.Where(m => m.IsActive))
-         .Where(p => p.Stock >= min && p.Stock <= max)
+         .Include(p => p.StockMovements.Where(ij=>ij.IsActive))
+         .Where(sm=> sm.StockMovements.Any(
+           l=>l.IsActive && 
+           l.RunningTotal >= min && 
+           l.RunningTotal <= max 
+          ))
          .ToListAsync();
     }
   }

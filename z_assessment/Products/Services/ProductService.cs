@@ -59,7 +59,7 @@ namespace Products.Services
     {
       var product = await _productRepository.GetByIdAsync(id);
       
-      if(product == null) throw new ArgumentNullException(nameof(product));
+      if(product == null) throw new KeyNotFoundException($"Product {id} not found");
 
       product.Description = dto.Description;
       product.Name = dto.Name;

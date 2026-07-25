@@ -8,14 +8,14 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["Procducts.Api/Products.Api.csproj", "Procducts.Api/"]
+COPY ["Products.Api/Products.Api.csproj", "Products.Api/"]
 COPY ["Products.Infrastructure/Products.Infrastructure.csproj", "Products.Infrastructure/"]
 COPY ["Products.Domain/Products.Domain.csproj", "Products.Domain/"]
 COPY ["Products/Products.csproj", "Products/"]
-RUN dotnet restore "./Procducts.Api/Products.Api.csproj"
+RUN dotnet restore "./Products.Api/Products.Api.csproj"
 
 COPY . .
-WORKDIR "/src/Procducts.Api"
+WORKDIR "/src/Products.Api"
 RUN dotnet build "./Products.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
@@ -25,4 +25,4 @@ RUN dotnet publish "./Products.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Procducts.Api.dll"]
+ENTRYPOINT ["dotnet", "Products.Api.dll"]

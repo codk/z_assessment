@@ -69,8 +69,8 @@ namespace Products.Tests.Unit
     {
       var products = new List<Product>
                     {
-                        new Product(){ Id = 100001, Name = "A"},
-                        new Product(){ Id = 100002, Name = "A"}
+                        new Product(){ Id = 100001, Name = "A", StockMovements = new List<StockMovement>() { new StockMovement() { RunningTotal = 10, IsActive=true } } },
+                        new Product(){ Id = 100002, Name = "A", StockMovements = new List<StockMovement>() { new StockMovement() { RunningTotal = 15, IsActive=true } } }
                     };
 
       _mockProductRepo.Setup(r => r.ProductSearchByStock(1, 20)).ReturnsAsync(products);

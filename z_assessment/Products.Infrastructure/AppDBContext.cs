@@ -27,6 +27,11 @@ namespace Products.Infrastructure
         x.Property(p => p.Id)
           .HasDefaultValueSql("nextval('\"ProductIdSeq\"')")
           .ValueGeneratedOnAdd();
+
+        x.HasMany(p => p.StockMovements)
+          .WithOne(m => m.Product)
+          .HasForeignKey(m => m.ProductId);
+
       });
 
       modelBuilder.Entity<StockMovement>(x =>

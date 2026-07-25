@@ -23,7 +23,7 @@ namespace Products.Infrastructure.Repositories
       return await _context.SaveChangesAsync();
     }
 
-    public async Task<T> GetByIdAsync(int id)
+    public virtual async Task<T> GetByIdAsync(int id)
     {
       // Uses DbContext.FindAsync which accepts key values; returns null if not found.
       return await _context.FindAsync<T>(id);

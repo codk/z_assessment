@@ -50,9 +50,11 @@ namespace Products.Infrastructure.Repositories
 
     public async Task<int> GetProductStock(int productId)
     {
-      return (await _context.StockMovements
+      var stock = await _context.StockMovements
           .Where(x => x.ProductId == productId && x.IsActive)
-          .FirstOrDefaultAsync())?.RunningTotal ?? 0;
+          .FirstOrDefaultAsync();
+
+      return stock?.RunningTotal ?? 0;
     }
   }
 }
