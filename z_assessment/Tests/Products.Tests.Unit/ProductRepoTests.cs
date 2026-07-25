@@ -92,5 +92,100 @@ namespace Products.Tests.Unit
     }
 
     private static Product CreateProduct(int id, string name, string description = default) => new Product { Id = id, Name = name, Description = description };
+
+
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsNull_WhenProductDoesNotExist()
+    {
+      _mockProductRepo.Setup(r => r.GetByIdAsync(100001)).ReturnsAsync((Product?)null);
+
+      var result = await _mockProductService.GetByIdAsync(100001);
+
+      result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetByNameAsync_ThrowsArgumentNullException_WhenNameIsNull()
+    {
+      Func<Task> act = async () => await _mockProductService.GetByNameAsync(null!);
+      await act.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task GetByNameAsync_ThrowsArgumentNullException_WhenNameIsWhiteSpace()
+    {
+      Func<Task> act = async () => await _mockProductService.GetByNameAsync("   ");
+      await act.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task CreateAsync_MapsNameAndDescription_Correctly()
+    {
+      var dto = new CreateProductDto("Product 1", "Description for product 1");
+      _mockProductRepo.Setup(x => x.CreateAsync(It.IsAny<Product>())).ReturnsAsync((Product p) => { p.Id = 1000000; return p.Id; });
+      var result = await _mockProductService.CreateAsync(dto);
+      result.Name.Should().Be(dto.Name);
+      result.Description.Should().Be(dto.Description);
+    }
+
+
+
+    [Fact]
+    public async Task UpdateAsync_ThrowsKeyNotFoundException_WhenProductDoesNotExists()
+    {
+      _mockProductRepo.Setup(r => r.GetByIdAsync(100001)).ReturnsAsync((Product?)null);
+      var updateDto = new UpdateProductDto("New Name", "New Description");
+      Func<Task> act = async () => await _mockProductService.UpdateAsync(100001, updateDto);
+      await act.Should().ThrowAsync<KeyNotFoundException>();
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsTrue_WhenProductExists()
+    {
+      var existingProduct = CreateProduct(100001, "Product to Delete");
+      _mockProductRepo.Setup(r => r.GetByIdAsync(100001)).ReturnsAsync(existingProduct);
+      _mockProductRepo.Setup(r => r.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
+      var result = await _mockProductService.DeleteAsync(100001);
+      result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ReturnsCorrectStock_FromActiveStockMovement()
+    {
+      var products = new List<Product>
+                {
+                    new Product { Id = 1, Name = "Product 1", StockMovements = new List<StockMovement> { new StockMovement { RunningTotal = 10, IsActive = true } } },
+                    new Product { Id = 2, Name = "Product 2", StockMovements = new List<StockMovement> { new StockMovement { RunningTotal = 20, IsActive = true } } }
+                };
+      _mockProductRepo.Setup(x => x.GetAllAsync()).ReturnsAsync(products);
+      var result = await _mockProductService.GetAllAsync();
+      result.Should().HaveCount(2);
+      result.First().Stock.Should().Be(10);
+      result.Last().Stock.Should().Be(20);
+    }
+
+    [Fact]
+    public async Task GetByStockRangeAsync_ReturnsEmpty_WhenNoProductsInRange()
+    {
+      _mockProductRepo.Setup(r => r.ProductSearchByStock(100, 200)).ReturnsAsync(new List<Product>());
+      var result = await _mockProductService.GetByStockAsync(100, 200);
+      result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetByStockRangeAsync_SwapsMinMax_WhenMinIsGreaterThanMax()
+    {
+      var products = new List<Product>
+                {
+                    new Product { Id = 1, Name = "Product 1", StockMovements = new List<StockMovement> { new StockMovement { RunningTotal = 10, IsActive = true } } },
+                    new Product { Id = 2, Name = "Product 2", StockMovements = new List<StockMovement> { new StockMovement { RunningTotal = 20, IsActive = true } } }
+                };
+      _mockProductRepo.Setup(r => r.ProductSearchByStock(10, 20)).ReturnsAsync(products);
+      var result = await _mockProductService.GetByStockAsync(10, 20);
+      result.Should().HaveCount(2);
+    }
+
   }
+
 }
