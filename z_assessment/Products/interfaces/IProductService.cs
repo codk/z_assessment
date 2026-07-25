@@ -1,11 +1,9 @@
 ﻿using Products.DTO;
 
-
 namespace Products.interfaces
 {
   public interface IProductService
   {
-
     Task<ProductResponseDto> CreateAsync(CreateProductDto dto);
 
     Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto);
@@ -18,14 +16,6 @@ namespace Products.interfaces
 
     Task<IEnumerable<ProductResponseDto>> GetByStockAsync(int stockMin, int stockMax);
 
-
-    //Task<bool> StockIncrementAsync(int productId, int incrementBy);
-    //Task<bool> StockDecrementAsync(int productId, int decreaseBy);
-
-    Task<bool> SetStock(int productId, int stock);
-
     Task<bool> DeleteAsync(int id);
-
-
   }
 }

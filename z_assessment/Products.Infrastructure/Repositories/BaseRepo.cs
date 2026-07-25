@@ -1,8 +1,5 @@
-﻿using Products.Domain;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Products.Domain;
 
 namespace Products.Infrastructure.Repositories
 {
@@ -14,8 +11,8 @@ namespace Products.Infrastructure.Repositories
     {
       _context = context;
     }
-    
-    public async Task<IEnumerable<T>> GetAllAsync()
+
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
       return await _context.Set<T>().ToListAsync();
     }

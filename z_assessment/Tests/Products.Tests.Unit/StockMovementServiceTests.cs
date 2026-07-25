@@ -41,7 +41,7 @@ namespace Products.Tests.Unit
 
       _mockRepo.Verify(x => x.CreateAsync(It.Is<StockMovement>(m =>
           m.ProductId == 100001 &&
-          m.StockQuantity == 10)), Times.Once);
+          m.MovementQuantity == 10)), Times.Once);
     }
 
     [Fact]

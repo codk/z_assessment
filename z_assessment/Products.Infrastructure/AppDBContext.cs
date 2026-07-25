@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Products.Domain.Entities;
+
 namespace Products.Infrastructure
 {
   public class AppDBContext(DbContextOptions<AppDBContext> options) : DbContext(options)
   {
     public DbSet<Product> Products { get; set; }
     public DbSet<StockMovement> StockMovements { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.HasSequence<int>("ProductIdSeq")
@@ -14,11 +16,11 @@ namespace Products.Infrastructure
         .HasMax(999999)
         .IsCyclic(false);
 
-      modelBuilder.Entity<Product>(x=>{
+      modelBuilder.Entity<Product>(x =>
+      {
         x.HasKey(p => p.Id);
         x.Property(p => p.Name).IsRequired().HasMaxLength(200);
         x.Property(p => p.Description).HasMaxLength(500);
-        x.Property(p => p.Stock).IsRequired();
         x.Property(p => p.CreatedOn).HasDefaultValueSql("now()");
         x.Property(p => p.UpdatedOn).HasDefaultValueSql("now()").ValueGeneratedOnAddOrUpdate();
 
@@ -30,14 +32,13 @@ namespace Products.Infrastructure
       modelBuilder.Entity<StockMovement>(x =>
       {
         x.HasKey(p => p.Id);
-        x.Property(p => p.StockQuantity).IsRequired();
+        x.Property(p => p.MovementQuantity).IsRequired();
+        x.Property(p => p.RunningTotal).IsRequired();
+        x.Property(p => p.IsActive).IsRequired().HasDefaultValue(false);
         x.Property(p => p.ProductId).IsRequired();
         x.Property(p => p.CreatedOn).HasDefaultValueSql("now()");
-        x.HasIndex(p => p.ProductId);
+        x.HasIndex(p => new { p.ProductId, p.IsActive });
       });
     }
-
   }
-
-   
 }

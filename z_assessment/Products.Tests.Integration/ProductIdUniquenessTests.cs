@@ -7,12 +7,11 @@ using Testcontainers.PostgreSql;
 namespace Products.Tests.Integration
 {
   //https://testcontainers.com/guides/getting-started-with-testcontainers-for-dotnet/
-  public class ProductIdUniquenessTests : IAsyncLifetime 
+  public class ProductIdUniquenessTests : IAsyncLifetime
   {
-
     #region container specs
 
-   // private readonly DatabaseFixture _fixture;
+    // private readonly DatabaseFixture _fixture;
 
     private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
           .WithImage("postgres:16-alpine")
@@ -37,8 +36,6 @@ namespace Products.Tests.Integration
 
     #endregion container specs
 
-
-
     [Fact]
     public async Task ConcurrentInserts_AllIdsAreUnique()
     {
@@ -50,7 +47,7 @@ namespace Products.Tests.Integration
       var tasks = tcount.Select(i => Task.Run(async () =>
         {
           await using var ctx = CreateContext();
-          var product = new Product { Name = $"Concurrent {i}", Stock = i };
+          var product = new Product { Name = $"Concurrent {i}" };
           ctx.Products.Add(product);
           await ctx.SaveChangesAsync();
           return product.Id;
@@ -70,7 +67,7 @@ namespace Products.Tests.Integration
       for (int i = 0; i < 5; i++)
       {
         await using var ctx = CreateContext();
-        var product = new Product { Name = $"Sequential {i}", Stock = 0 };
+        var product = new Product { Name = $"Sequential {i}"};
         ctx.Products.Add(product);
         await ctx.SaveChangesAsync();
         ids.Add(product.Id);

@@ -15,24 +15,44 @@ namespace Products.Infrastructure.Repositories
 
     public override async Task<int> CreateAsync(StockMovement entity)
     {
-      var product = await _context.Products.FindAsync(entity.ProductId)
-          ?? throw new InvalidOperationException($"Product {entity.ProductId} not found.");
+      await using var tx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
-      // get absolute stock for the product -  sum of all movements
-      var stockActual = await GetProductStock(entity.ProductId);
+      if (!await _context.Products.AnyAsync(p => p.Id == entity.ProductId))
+        throw new InvalidOperationException($"Product {entity.ProductId} not found.");
 
-      await _context.StockMovements.AddAsync(entity);
-      product.Stock = stockActual + entity.StockQuantity;
+      var current = await _context.StockMovements
+         .Where(m => m.ProductId == entity.ProductId && m.IsActive)
+         .FirstOrDefaultAsync();
 
-      return await _context.SaveChangesAsync();
+      var currentTotal = current?.RunningTotal ?? 0;
+      var newTotal = currentTotal + entity.MovementQuantity;
+
+      if (newTotal < 0)
+        throw new InvalidOperationException($"No stock available. Current {currentTotal}, Requested:{Math.Abs(entity.MovementQuantity)}.");
+
+      if (current is not null)
+        current.IsActive = false;
+
+      await _context.StockMovements.AddAsync(new
+        StockMovement
+      {
+        ProductId = entity.ProductId,
+        MovementQuantity = entity.MovementQuantity,
+        RunningTotal = newTotal,
+        IsActive = true
+      });
+
+      await _context.SaveChangesAsync();
+      await tx.CommitAsync();
+
+      return newTotal;
     }
 
-    // Source of truth - get the stock for a product by summing all movements
     public async Task<int> GetProductStock(int productId)
     {
-      return await _context.StockMovements
-          .Where(x => x.ProductId == productId)
-          .SumAsync(x => x.StockQuantity);
+      return (await _context.StockMovements
+          .Where(x => x.ProductId == productId && x.IsActive)
+          .FirstOrDefaultAsync())?.RunningTotal ?? 0;
     }
   }
 }

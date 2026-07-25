@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Products.DTO
+﻿namespace Products.DTO
 {
   public record ProductResponseDto(
     int Id,
@@ -10,5 +6,4 @@ namespace Products.DTO
     string Description,
     int Stock
   );
-
 }

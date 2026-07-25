@@ -25,8 +25,8 @@ namespace Products.Tests.Unit
     {
       var products = new List<Product>
                 {
-                    new Product { Id = 1, Name = "Product 1", Stock = 100 },
-                    new Product { Id = 2, Name = "Product 2", Stock = 200 }
+                    new Product { Id = 1, Name = "Product 1" },
+                    new Product { Id = 2, Name = "Product 2" }
                 };
 
       _mockProductRepo.Setup(x => x.GetAllAsync()).ReturnsAsync(products);
@@ -69,10 +69,9 @@ namespace Products.Tests.Unit
     {
       var products = new List<Product>
                     {
-                        new Product(){ Id = 100001, Name = "A", Stock=5},
-                        new Product(){ Id = 100002, Name = "A", Stock=20}
+                        new Product(){ Id = 100001, Name = "A"},
+                        new Product(){ Id = 100002, Name = "A"}
                     };
-
 
       _mockProductRepo.Setup(r => r.ProductSearchByStock(1, 20)).ReturnsAsync(products);
 
@@ -91,7 +90,6 @@ namespace Products.Tests.Unit
       var result = await _mockProductService.CreateAsync(dto);
       result.Id.Should().Be(1000000);
     }
-
 
     private static Product CreateProduct(int id, string name, string description = default) => new Product { Id = id, Name = name, Description = description };
   }

@@ -46,5 +46,5 @@ dotnet test Products.Tests.Integration
   
 ## EF Migrations
 ```
- dotnet ef migrations add MigrationName --project Products.Infrastructure  --startup-project Procducts.Api
+ dotnet ef migrations add MigrationName --project .\Products.Infrastructure  --startup-project .\Products.Api
 ```

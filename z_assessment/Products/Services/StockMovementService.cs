@@ -1,9 +1,6 @@
 ﻿using Products.Domain.Interfaces;
 using Products.DTO;
-using Products.Infrastructure.Repositories;
 using Products.interfaces;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace Products.Services
 {
@@ -26,11 +23,10 @@ namespace Products.Services
         throw new InvalidOperationException($"Product with id {dto.productId} not found.");
       }
 
-      await _stockMovementRepository.CreateAsync(new Domain.Entities.StockMovement() { ProductId = dto.productId, StockQuantity = dto.quantity });
+      await _stockMovementRepository.CreateAsync(new Domain.Entities.StockMovement() { ProductId = dto.productId, MovementQuantity = dto.quantity });
 
       //retreive stock from all movements for the product
       var finalStock = await _stockMovementRepository.GetProductStock(dto.productId);
-      
 
       return finalStock;
     }

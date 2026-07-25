@@ -45,7 +45,7 @@ namespace Products.Api.Controllers
     }
 
     [HttpPost]
-    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromBody] CreateProductDto dto)
@@ -55,7 +55,7 @@ namespace Products.Api.Controllers
 
       var created = await productService.CreateAsync(dto);
 
-      return CreatedAtAction(nameof(Create), new { id = created.Id }, created);
+      return Ok(created);
     }
 
     [HttpPut("{id:int}")]
@@ -83,8 +83,6 @@ namespace Products.Api.Controllers
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
 
-      
-
       var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity));
 
       return (added > 0) ? Ok() : BadRequest(new { error = "Failed to increment stock." });
@@ -99,14 +97,11 @@ namespace Products.Api.Controllers
     {
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
-      
-      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity*-1));
+
+      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity * -1));
 
       return (added > 0) ? Ok() : BadRequest(new { error = "Failed to decrement stock." });
-
-      
     }
-
 
     [HttpDelete("{id:int}")]
     [ProducesResponseType<ProductResponseDto>(StatusCodes.Status200OK)]
