@@ -23,7 +23,7 @@ namespace Products.Infrastructure.Repositories
           .ExecuteUpdateAsync(s => s.SetProperty(p => p.UpdatedOn, DateTime.UtcNow));
 
       if (affected == 0)
-        throw new InvalidOperationException($"Product {entity.ProductId} not found.");
+        throw new KeyNotFoundException($"Product {entity.ProductId} not found.");
 
       var current = await _context.StockMovements
          .Where(m => m.ProductId == entity.ProductId && m.IsActive)

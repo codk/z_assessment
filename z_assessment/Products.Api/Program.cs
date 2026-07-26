@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Products.Domain.Interfaces;
 using Products.Infrastructure;
@@ -42,6 +43,21 @@ if (app.Environment.IsDevelopment())
   app.MapOpenApi();
   app.MapScalarApiReference();
 }
+
+//handle exceptions and return JSON response
+app.UseExceptionHandler(errApp => errApp.Run(async ctx =>
+{
+  var ex = ctx.Features.Get<IExceptionHandlerFeature>()?.Error;
+  ctx.Response.ContentType = "application/json";
+  ctx.Response.StatusCode = ex switch
+  {
+    KeyNotFoundException => 404,
+    ArgumentException => 400,
+    InvalidOperationException => 409,
+    _ => 500
+  };
+  await ctx.Response.WriteAsJsonAsync(new { error = ex?.Message });
+}));
 
 app.UseHttpsRedirection();
 

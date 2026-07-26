@@ -55,11 +55,11 @@ namespace Products.Services
       return products?.Select(ToDto) ?? Enumerable.Empty<ProductResponseDto>();
     }
 
-    public async Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto)
+    public async Task<ProductResponseDto?> UpdateAsync(int id, UpdateProductDto dto)
     {
       var product = await _productRepository.GetByIdAsync(id);
-      
-      if(product == null) throw new KeyNotFoundException($"Product {id} not found");
+
+      if (product == null) return default;
 
       product.Description = dto.Description;
       product.Name = dto.Name;

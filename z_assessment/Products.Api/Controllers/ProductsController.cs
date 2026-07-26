@@ -28,7 +28,7 @@ namespace Products.Api.Controllers
 
     [HttpGet("search")]
     [ProducesResponseType<IEnumerable<ProductResponseDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Search([FromQuery] string name)
     {
       var products = await productService.GetByNameAsync(name);
@@ -37,7 +37,6 @@ namespace Products.Api.Controllers
 
     [HttpGet("stock-level")]
     [ProducesResponseType<IEnumerable<ProductResponseDto>>(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetByStockLevel([FromQuery] int min, [FromQuery] int max)
     {
       var products = await productService.GetByStockAsync(min, max);
@@ -45,7 +44,7 @@ namespace Products.Api.Controllers
     }
 
     [HttpPost]
-    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create(
         [FromBody] CreateProductDto dto)
@@ -55,7 +54,7 @@ namespace Products.Api.Controllers
 
       var created = await productService.CreateAsync(dto);
 
-      return Ok(created);
+      return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
@@ -74,8 +73,10 @@ namespace Products.Api.Controllers
     }
 
     [HttpPost("{id}/add-to-stock/{quantity}")]
-    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> AddToStock(
       int id,
       int quantity)
@@ -83,14 +84,16 @@ namespace Products.Api.Controllers
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
 
-      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity));
+      await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity));
 
-      return (added > 0) ? Ok() : BadRequest(new { error = "Failed to increment stock." });
+      return Created();
     }
 
     [HttpPost("{id}/decrement-stock/{quantity}")]
-    [ProducesResponseType<ProductResponseDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> DecrementStock(
   int id,
   int quantity)
@@ -98,9 +101,9 @@ namespace Products.Api.Controllers
       if (quantity <= 0)
         return BadRequest(new { error = "Quantity must be greater than zero." });
 
-      var added = await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity * -1));
+      await stockMovementService.CreateAsync(new CreateStockMovementDto(id, quantity * -1));
 
-      return (added > 0) ? Ok() : BadRequest(new { error = "Failed to decrement stock." });
+      return Created();
     }
 
     [HttpDelete("{id:int}")]

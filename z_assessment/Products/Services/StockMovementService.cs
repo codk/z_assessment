@@ -9,7 +9,7 @@ namespace Products.Services
   {
     protected readonly IStockMovementRepository _stockMovementRepository;
 
-    public StockMovementService(IStockMovementRepository stockMovementRepository, IProductService productService)
+    public StockMovementService(IStockMovementRepository stockMovementRepository)
     {
       _stockMovementRepository = stockMovementRepository ?? throw new ArgumentNullException(nameof(stockMovementRepository));
     }

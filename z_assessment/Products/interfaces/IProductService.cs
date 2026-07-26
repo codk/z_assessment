@@ -6,7 +6,7 @@ namespace Products.interfaces
   {
     Task<ProductResponseDto> CreateAsync(CreateProductDto dto);
 
-    Task<ProductResponseDto> UpdateAsync(int id, UpdateProductDto dto);
+    Task<ProductResponseDto?> UpdateAsync(int id, UpdateProductDto dto);
 
     Task<IEnumerable<ProductResponseDto>> GetAllAsync();
 

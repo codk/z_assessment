@@ -246,7 +246,7 @@ namespace Products.Tests.Integration
 
       Func<Task> act = async () => await repo.CreateAsync(new StockMovement { ProductId = 9999999, MovementQuantity = 1 });
 
-      await act.Should().ThrowAsync<InvalidOperationException>()
+      await act.Should().ThrowAsync<KeyNotFoundException>()
         .WithMessage("*not found*");
     }
 

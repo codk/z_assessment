@@ -17,7 +17,7 @@ namespace Products.Tests.Unit
     public ProductRepoTests()
     {
       _mockProductService = new ProductService(_mockProductRepo.Object);
-      _mockStockMovementService = new StockMovementService(_mockStockMovementRepo.Object, _mockProductService);
+      _mockStockMovementService = new StockMovementService(_mockStockMovementRepo.Object);
     }
 
     [Fact]
@@ -132,12 +132,12 @@ namespace Products.Tests.Unit
 
 
     [Fact]
-    public async Task UpdateAsync_ThrowsKeyNotFoundException_WhenProductDoesNotExists()
+    public async Task UpdateAsync_ReturnsNull_WhenProductDoesNotExist()
     {
       _mockProductRepo.Setup(r => r.GetByIdAsync(100001)).ReturnsAsync((Product?)null);
       var updateDto = new UpdateProductDto("New Name", "New Description");
-      Func<Task> act = async () => await _mockProductService.UpdateAsync(100001, updateDto);
-      await act.Should().ThrowAsync<KeyNotFoundException>();
+      var result = await _mockProductService.UpdateAsync(100001, updateDto);
+      result.Should().BeNull();
     }
 
     [Fact]

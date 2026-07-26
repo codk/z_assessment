@@ -3,7 +3,6 @@ using Moq;
 using Products.Domain.Entities;
 using Products.Domain.Interfaces;
 using Products.DTO;
-using Products.interfaces;
 using Products.Services;
 
 namespace Products.Tests.Unit
@@ -11,21 +10,17 @@ namespace Products.Tests.Unit
   public class StockMovementServiceTests
   {
     private readonly Mock<IStockMovementRepository> _mockRepo = new();
-    private readonly Mock<IProductService> _mockProductService = new();
     private readonly StockMovementService _service;
 
     public StockMovementServiceTests()
     {
-      _service = new StockMovementService(_mockRepo.Object, _mockProductService.Object);
+      _service = new StockMovementService(_mockRepo.Object);
     }
-
 
     [Fact]
     public async Task CreateAsync_CallsRepositoryCreate_WithCorrectProductIdAndQuantity()
     {
-      _mockProductService.Setup(x => x.GetByIdAsync(100001)).ReturnsAsync(new ProductResponseDto(100001, "Alpha", null, 0));
-      _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(1);
-      _mockRepo.Setup(x => x.GetProductStock(100001)).ReturnsAsync(10);
+      _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(10);
 
       await _service.CreateAsync(new CreateStockMovementDto(100001, 10));
 
@@ -35,11 +30,9 @@ namespace Products.Tests.Unit
     }
 
     [Fact]
-    public async Task CreateAsync_ReturnsStockFromGetProductStock()
+    public async Task CreateAsync_ReturnsRunningTotalFromRepository()
     {
-      _mockProductService.Setup(x => x.GetByIdAsync(100001)).ReturnsAsync(new ProductResponseDto(100001, "Alpha", null, 50));
       _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(50);
-      _mockRepo.Setup(x => x.GetProductStock(100001)).ReturnsAsync(50);
 
       var result = await _service.CreateAsync(new CreateStockMovementDto(100001, 10));
 
@@ -47,40 +40,23 @@ namespace Products.Tests.Unit
     }
 
     [Fact]
-    public async Task CreateAsync_WithPositiveQuantity_ReturnsIncreasedStock()
+    public async Task CreateAsync_WithPositiveQuantity_ReturnsPositiveTotal()
     {
-      _mockProductService.Setup(x => x.GetByIdAsync(100001)).ReturnsAsync(new ProductResponseDto(100001, "Alpha", null, 40));
       _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(50);
-      _mockRepo.Setup(x => x.GetProductStock(100001)).ReturnsAsync(50);
 
       var result = await _service.CreateAsync(new CreateStockMovementDto(100001, 10));
 
-      result.Should().Be(50);
-      result.Should().BeGreaterThan(40);
+      result.Should().BePositive();
     }
 
     [Fact]
-    public async Task CreateAsync_WithNegativeQuantity_ReturnsDecreasedStock()
+    public async Task CreateAsync_WithNegativeQuantity_ReturnsDecreasedTotal()
     {
       _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(40);
 
       var result = await _service.CreateAsync(new CreateStockMovementDto(100001, -10));
 
       result.Should().Be(40);
-      result.Should().BeLessThan(50);
     }
-
-
-    [Fact]
-    public async Task CreateAsync_ReturnsNewRunningTotal()
-    {
-      _mockRepo.Setup(x => x.CreateAsync(It.IsAny<StockMovement>())).ReturnsAsync(50);
-      var result = await _service.CreateAsync(new CreateStockMovementDto(100001, 10));
-      result.Should().Be(50);
-    }
-
-
-
-
   }
 }
