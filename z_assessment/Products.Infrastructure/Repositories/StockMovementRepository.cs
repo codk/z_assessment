@@ -15,9 +15,14 @@ namespace Products.Infrastructure.Repositories
 
     public override async Task<int> CreateAsync(StockMovement entity)
     {
-      await using var tx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+      await using var tx = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
-      if (!await _context.Products.AnyAsync(p => p.Id == entity.ProductId))
+      // update and lock the product 
+      var affected = await _context.Products
+          .Where(p => p.Id == entity.ProductId)
+          .ExecuteUpdateAsync(s => s.SetProperty(p => p.UpdatedOn, DateTime.UtcNow));
+
+      if (affected == 0)
         throw new InvalidOperationException($"Product {entity.ProductId} not found.");
 
       var current = await _context.StockMovements
